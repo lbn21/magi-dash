@@ -1,36 +1,55 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# MagiDash
 
-## Getting Started
+Small Next.js app that lists dashboards from MySQL. Built for the MagiDash Corp interview brief — see [
+`BRIEF.md`](./BRIEF.md).
 
-First, run the development server:
+Stack: Next.js 16 (App Router), TypeScript, mysql2/promise (no ORM), Zod, Vitest.
+
+## Run
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+docker-compose up --force-recreate --build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- UI: http://localhost/
+- JSON: http://localhost/api/dashboards
+- Health: http://localhost/api/health
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Tear down with `docker-compose down -v`. The `-v` wipes the DB volume so the seed re-applies on the next `up`.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Develop
 
-## Learn More
+```bash
+npm install
+docker-compose up mysql-db -d
+npm run dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+Set `DB_HOST=127.0.0.1` in `.env.local` so the dev server reaches the compose-managed DB.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Test
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+npm test
+npm run typecheck
+```
 
-## Deploy on Vercel
+## Smoke tests
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+./smoke_tests.sh
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Decisions
+
+Short ADRs for the choices that are not obvious from the code:
+
+- [0001 — Stack choice](./docs/adr/0001-stack-choice.md)
+- [0002 — Data access](./docs/adr/0002-data-access.md)
+- [0003 — Error handling](./docs/adr/0003-error-handling.md)
+- [0004 — Testing strategy](./docs/adr/0004-testing-strategy.md)
+
+## Notes
+
+Built and tested on macOS (Apple Silicon, Docker Desktop). The `mysql:5` image runs under Rosetta via
+`platform: linux/amd64` — first boot of the DB is slower because of that.
